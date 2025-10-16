@@ -4,76 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Конфигуратор Регистров</title>
-    <!-- Убедитесь, что путь к стилям правильный -->
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
+    <!-- ИЗМЕНЕНИЕ: класс header вместо actions-panel -->
+    <header class="header">
+        <!-- ИЗМЕНЕНИЕ: Добавлены классы .btn и .btn-primary к ссылке -->
+        <a href="/commands.html" class="btn btn-primary">Инструменты сервера</a>
 
-    <header class="actions-panel">
-        <!-- Ссылка на новую страницу инструментов -->
-        <a href="/commands.html" class="btn-primary">Инструменты сервера</a>
-        <hr style="border: none; margin: 0 10px;">
+        <!-- ИЗМЕНЕНИЕ: Добавлены классы .btn и цветовые классы к кнопкам -->
+        <button id="load-from-server-btn" class="btn btn-secondary">🔄 Загрузить с сервера</button>
+        <button id="save-to-server-btn" class="btn btn-warning">💾 Сохранить на сервере</button>
+        <button id="download-btn" class="btn btn-secondary">📄 Скачать файл</button>
+        <button id="load-from-disk-btn" class="btn btn-secondary">📂 Загрузить с диска</button>
+        <button id="reset-all-btn" class="btn btn-danger">❌ Сбросить все</button>
         
-        <!-- Кнопки для управления конфигуратором -->
-        <button id="load-from-server-btn" class="btn-secondary">🔄 Загрузить с сервера</button>
-        <button id="save-to-server-btn" class="btn-warning">💾 Сохранить на сервере</button>
-        <button id="download-btn" class="btn-primary">📄 Скачать файл</button>
-        <button id="load-from-disk-btn" class="btn-secondary">📂 Загрузить с диска</button>
-        <button id="reset-all-btn" class="btn-danger">❌ Сбросить все</button>
-        
-        <!-- Скрытый input для загрузки файлов с диска -->
         <input type="file" id="file-input" accept=".json">
     </header>
 
     <div class="main-container">
-        <!-- Навигация по сегментам -->
-        <nav id="segment-nav">
-            <ul id="segment-list">
-                <!-- Сюда JavaScript добавит элементы списка -->
-            </ul>
-        </nav>
-        
-        <!-- Основная рабочая область -->
-        <main id="register-view">
-            <!-- Редактор свойств сегмента -->
-            <div id="segment-editor">
-                <!-- Сюда JavaScript добавит поля для редактирования сегмента -->
-            </div>
-            
-            <!-- Таблица регистров -->
+        <nav id="segment-nav"><ul id="segment-list"></ul></nav>
+        <main class="page-container">
+            <div id="segment-editor"></div>
             <table class="register-table">
-                <thead>
-                    <tr>
-                        <th>Имя</th>
-                        <th>Размер (бит)</th>
-                        <th>Адрес</th>
-                        <th>Описание</th>
-                        <th>Тип</th>
-                        <th>Значение по умолч.</th>
-                        <th>Действие</th>
-                    </tr>
-                </thead>
-                <tbody id="register-table-body">
-                    <!-- Сюда JavaScript добавит строки с регистрами -->
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="7">
-                            <button class="btn-success btn-add" id="add-reg-btn">➕ Добавить регистр</button>
-                        </td>
-                    </tr>
-                </tfoot>
+                <thead><tr><th>Имя</th><th>Размер (бит)</th><th>Адрес</th><th>Описание</th><th>Тип</th><th>Значение по умолч.</th><th>Действие</th></tr></thead>
+                <tbody id="register-table-body"></tbody>
+                <tfoot><tr><td colspan="7"><button class="btn btn-success btn-add" id="add-reg-btn">➕ Добавить регистр</button></td></tr></tfoot>
             </table>
         </main>
     </div>
     
-    <!-- Контейнер для вывода и предпросмотра JSON -->
-    <div id="output-container">
-        <h3>Предпросмотр JSON:</h3>
-        <textarea id="json-output" readonly></textarea>
+    <div id="output-container" class="page-container" style="padding-top: 0;">
+        <div class="tool-section">
+            <h2>Предпросмотр JSON:</h2>
+            <textarea id="json-output" readonly style="width: 100%; min-height: 200px; border: none; font-family: monospace;"></textarea>
+        </div>
     </div>
 
-    <!-- Убедитесь, что путь к скрипту правильный -->
     <script src="/scripts/script.js" defer></script>
 </body>
 </html>

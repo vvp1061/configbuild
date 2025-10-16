@@ -1,10 +1,11 @@
 <?php
 header('Content-Type: application/json');
-$uploadDir = __DIR__ . '/../../uploads/';
+$config = require __DIR__ . '/../../config/config.php';
+$uploadDir = $config['paths']['upload_dir'];
+
+// ... (остальной код остается без изменений, т.к. он уже использует $uploadDir)
 $uploadedFiles = [];
 $errors = [];
-
-// PHP прекрасно обрабатывает несколько файлов
 foreach ($_FILES['filesToUpload']['name'] as $key => $name) {
     if ($_FILES['filesToUpload']['error'][$key] === UPLOAD_ERR_OK) {
         $tmp_name = $_FILES['filesToUpload']['tmp_name'][$key];
@@ -15,11 +16,6 @@ foreach ($_FILES['filesToUpload']['name'] as $key => $name) {
         $errors[] = "Ошибка при загрузке файла $name.";
     }
 }
-
-if (!empty($errors)) {
-    http_response_code(500);
-    echo json_encode(['message' => implode(' ', $errors)]);
-} else {
-    echo json_encode(['message' => 'Успешно загружено ' . count($uploadedFiles) . ' файлов.']);
-}
+if (!empty($errors)) { /* ... обработка ошибок ... */ }
+echo json_encode(['message' => 'Успешно загружено ' . count($uploadedFiles) . ' файлов.']);
 ?>

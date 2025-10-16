@@ -96,7 +96,7 @@ function displaySegment(segmentIndex) {
                     </select>
                 </td>
                 <td><input type="text" value="${reg.default_value}" data-field="default_value" data-reg-index="${regIndex}"></td>
-                <td><button class="btn-danger btn-delete-reg" data-reg-index="${regIndex}">🗑️ Удалить</button></td>
+                <td><button class="btn btn-danger btn-delete-reg" data-reg-index="${regIndex}">🗑️ Удалить</button></td>
             `;
             registerTableBody.appendChild(row);
         });

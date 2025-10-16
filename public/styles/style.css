@@ -1,45 +1,61 @@
+/* =================================================================== */
+/* 1. Глобальные переменные и настройки (Дизайн-система)
+/* =================================================================== */
 :root {
-    --bg-color: #f4f7f6;
-    --main-text-color: #333;
-    --primary-color: #007bff;
-    --primary-hover-color: #0056b3;
-    --secondary-color: #6c757d;
-    --secondary-hover-color: #5a6268;
-    --border-color: #dee2e6;
-    --header-bg: #ffffff;
-    --nav-bg: #ffffff;
-    --nav-active-bg: #e9ecef;
-    --table-header-bg: #f8f9fa;
-    --disabled-bg: #e9ecef;
-    --red-color: #dc3545;
-    --red-hover-color: #c82333;
-    --green-color: #28a745;
-    --green-hover-color: #218838;
-    --warning-color: #ffc107;
-    --warning-hover-color: #e0a800;
+    --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --color-bg: #f8f9fa;
+    --color-surface: #ffffff;
+    --color-text: #212529;
+    --color-text-muted: #6c757d;
+    --color-border: #dee2e6;
+    
+    --color-primary: #0d6efd;
+    --color-primary-hover: #0b5ed7;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5c636a;
+    --color-success: #198754;
+    --color-success-hover: #157347;
+    --color-danger: #dc3545;
+    --color-danger-hover: #bb2d3b;
+    --color-warning: #ffc107;
+    --color-warning-hover: #ffca2c;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --border-radius: 0.375rem; /* 6px */
+}
+
+/* =================================================================== */
+/* 2. Базовые стили и сбросы
+/* =================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-family-sans);
     margin: 0;
-    background-color: var(--bg-color);
-    color: var(--main-text-color);
+    background-color: var(--color-bg);
+    color: var(--color-text);
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
 }
 
-header,
-.actions-panel {
-    background-color: var(--header-bg);
-    padding: 15px 30px;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+/* =================================================================== */
+/* 3. Основной макет
+/* =================================================================== */
+.header {
+    background-color: var(--color-surface);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.75rem; /* Расстояние между кнопками */
+    flex-wrap: wrap; /* Перенос кнопок на новую строку на маленьких экранах */
 }
 
 .main-container {
@@ -48,265 +64,114 @@ header,
     overflow: hidden;
 }
 
-#segment-nav {
-    flex: 0 0 250px;
-    background-color: var(--nav-bg);
-    border-right: 1px solid var(--border-color);
-    overflow-y: auto;
-}
-
-#segment-nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-#segment-nav li a {
-    display: block;
-    padding: 10px 20px;
-    text-decoration: none;
-    color: var(--main-text-color);
-    cursor: pointer;
-    border-left: 3px solid transparent;
-}
-
-#segment-nav li a:hover {
-    background-color: var(--nav-active-bg);
-}
-
-#segment-nav li a.active {
-    background-color: var(--nav-active-bg);
-    font-weight: bold;
-    border-left-color: var(--primary-color);
-}
-
-#register-view {
-    flex-grow: 1;
-    padding: 20px 30px;
-    overflow-y: auto;
-}
-
-#segment-editor {
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 20px;
-    background: #fff;
-}
-
-#segment-editor h2 {
-    margin-top: 0;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.form-grid label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.form-grid input {
-    width: 95%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.register-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9em;
-}
-
-.register-table th,
-.register-table td {
-    border: 1px solid var(--border-color);
-    padding: 8px;
-    text-align: left;
-    vertical-align: middle;
-}
-
-.register-table th {
-    background-color: var(--table-header-bg);
-}
-
-.register-table input,
-.register-table select {
-    width: 95%;
-    padding: 6px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 1em;
-}
-
-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.2s;
-}
-
-button:disabled {
-    background-color: var(--disabled-bg);
-    cursor: not-allowed;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background-color: var(--primary-hover-color);
-}
-
-.btn-secondary {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background-color: var(--secondary-hover-color);
-}
-
-.btn-danger {
-    background-color: var(--red-color);
-    color: white;
-}
-
-.btn-danger:hover:not(:disabled) {
-    background-color: var(--red-hover-color);
-}
-
-.btn-success {
-    background-color: var(--green-color);
-    color: white;
-}
-
-.btn-success:hover:not(:disabled) {
-    background-color: var(--green-hover-color);
-}
-
-.btn-warning {
-    background-color: var(--warning-color);
-    color: #212529;
-}
-
-.btn-warning:hover:not(:disabled) {
-    background-color: var(--warning-hover-color);
-}
-
-.btn-delete-reg {
-    padding: 5px 10px;
-}
-
-.btn-add {
-    width: 100%;
-    padding: 10px;
-    font-size: 1em;
-}
-
-#output-container {
-    display: none;
-    padding: 0 30px 30px 30px;
-    flex-shrink: 0;
-}
-
-#json-output {
-    width: calc(100% - 20px);
-    height: 200px;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-family: "Courier New", Courier, monospace;
-    white-space: pre;
-    background-color: #fff;
-}
-
-#file-input {
-    display: none;
-}
-
 .page-container {
-    padding: 20px 30px;
+    padding: 1.5rem;
     overflow-y: auto;
     flex-grow: 1;
 }
 
-.tool-section {
-    background-color: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 20px;
-    margin-bottom: 25px;
-}
-
-.tool-section h2 {
-    margin-top: 0;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-}
-
-.tool-section p {
-    margin-top: 0;
-    color: #555;
-}
-
-.checkbox-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.checkbox-group label {
-    display: flex;
+/* =================================================================== */
+/* 4. Система кнопок (решает все проблемы)
+/* =================================================================== */
+.btn {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    padding: 0.5rem 1rem; /* Единый размер для всех */
+    border: 1px solid transparent;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;
 }
 
-#file-input {
-    display: block;
-    margin-bottom: 15px;
+.btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
-.result-box {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 4px;
-    background-color: var(--bg-color);
-    border: 1px solid var(--border-color);
+/* Цветовые схемы */
+.btn-primary { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
+.btn-primary:hover { background-color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+
+.btn-secondary { background-color: var(--color-secondary); color: white; border-color: var(--color-secondary); }
+.btn-secondary:hover { background-color: var(--color-secondary-hover); border-color: var(--color-secondary-hover); }
+
+.btn-success { background-color: var(--color-success); color: white; border-color: var(--color-success); }
+.btn-success:hover { background-color: var(--color-success-hover); border-color: var(--color-success-hover); }
+
+.btn-warning { background-color: var(--color-warning); color: var(--color-text); border-color: var(--color-warning); }
+.btn-warning:hover { background-color: var(--color-warning-hover); border-color: var(--color-warning-hover); }
+
+.btn-danger { background-color: var(--color-danger); color: white; border-color: var(--color-danger); }
+.btn-danger:hover { background-color: var(--color-danger-hover); border-color: var(--color-danger-hover); }
+
+.btn-delete-reg { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+.btn-add { width: 100%; }
+
+/* =================================================================== */
+/* 5. Стилизация контента
+/* =================================================================== */
+
+/* Карточки для секций */
+.tool-section, #segment-editor {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
 }
 
-.result-box p {
-    margin: 0;
+h2 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
 }
 
-.result-box .success {
-    color: var(--green-color);
-    font-weight: bold;
+p, label {
+    color: var(--color-text-muted);
+    line-height: 1.5;
 }
 
-.result-box .error {
-    color: var(--red-color);
-    font-weight: bold;
+/* Формы */
+input[type="text"], input[type="password"], input[type="number"], select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.result-box pre {
-    margin-top: 10px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    background-color: #333;
-    color: #eee;
-    padding: 10px;
-    border-radius: 4px;
+input:focus-visible, select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
 }
+
+/* Таблицы */
+.register-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+.register-table th, .register-table td { border: 1px solid var(--border-color); padding: 0.75rem; text-align: left; }
+.register-table thead th { background-color: var(--color-bg); font-weight: 600; }
+.register-table tbody tr:nth-child(odd) { background-color: var(--color-surface); }
+
+/* Навигация */
+#segment-nav { flex: 0 0 250px; background-color: var(--color-surface); border-right: 1px solid var(--color-border); overflow-y: auto; }
+#segment-nav ul { list-style-type: none; padding: 0.5rem 0; margin: 0; }
+#segment-nav li a { display: block; padding: 0.75rem 1.5rem; text-decoration: none; color: var(--color-text); cursor: pointer; border-left: 3px solid transparent; }
+#segment-nav li a:hover { background-color: var(--color-bg); }
+#segment-nav li a.active { font-weight: 600; color: var(--color-primary); border-left-color: var(--color-primary); }
+
+/* Блоки с результатами */
+.result-box { margin-top: 1rem; padding: 1rem; border-radius: var(--border-radius); background-color: var(--color-bg); border: 1px solid var(--color-border); }
+.result-box pre { margin: 0.5rem 0 0 0; white-space: pre-wrap; word-wrap: break-word; background-color: #2b3035; color: #f8f9fa; padding: 1rem; border-radius: var(--border-radius); }
+.result-box .success { color: var(--color-success); font-weight: 500; }
+.result-box .error { color: var(--color-danger); font-weight: 500; }
+
+#file-input { display: none; }

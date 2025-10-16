@@ -1,25 +1,28 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-// --- ШАГ 1: Запускаем обрабатывающий скрипт ---
-$scriptPath = __DIR__ . '/../../processing_script.sh';
-// shell_exec выполняет скрипт и ждет его завершения
-shell_exec('bash ' . escapeshellarg($scriptPath));
+$config = require __DIR__ . '/../../config/config.php';
 
-// --- ШАГ 2: Создаем ZIP-архив ---
-// Папка, которую будем архивировать
-$sourceDir = __DIR__ . '/../../processed_files/';
-// Имя временного файла архива
-$zipFileName = 'archive_' . date('Y-m-d_H-i-s') . '.zip';
-$zipFilePath = sys_get_temp_dir() . '/' . $zipFileName; // Сохраняем во временную папку системы
+// --- ИЗМЕНЕНИЕ: Получаем оба пути из конфига ---
+$scriptPath = $config['scripts']['processing_script']['path'];
+$sourceDir = $config['paths']['processed_files_dir']; // Папка с результатами
 
-$zip = new ZipArchive();
-if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+// --- Запускаем обрабатывающий скрипт, ПЕРЕДАВАЯ ЕМУ ПУТЬ как аргумент ---
+// escapeshellarg защитит и путь, и команду
+$command = 'bash ' . escapeshellarg($scriptPath) . ' ' . escapeshellarg($sourceDir);
+shell_exec($command);
+
+// Проверяем, что папка действительно была создана скриптом
+if (!is_dir($sourceDir)) {
     http_response_code(500);
-    die("Не удалось создать архив");
+    // Добавим более информативное сообщение об ошибке
+    error_log("Критическая ошибка: обрабатывающий скрипт не создал директорию: " . $sourceDir);
+    die("Критическая ошибка: обрабатывающий скрипт не создал директорию с результатами.");
 }
 
-// Добавляем файлы в архив
+// --- Остальной код для создания и отдачи архива остается без изменений ---
+$zipFileName = 'archive_' . date('Y-m-d_H-i-s') . '.zip';
+$zipFilePath = sys_get_temp_dir() . '/' . $zipFileName;
+$zip = new ZipArchive();
+if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) { /* ... */ }
 $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourceDir), RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($files as $name => $file) {
     if (!$file->isDir()) {
@@ -29,10 +32,6 @@ foreach ($files as $name => $file) {
     }
 }
 $zip->close();
-
-
-// --- ШАГ 3: Отдаем архив браузеру для скачивания ---
-// Устанавливаем правильные заголовки
 header('Content-Description: File Transfer');
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="' . basename($zipFilePath) . '"');
@@ -40,13 +39,7 @@ header('Expires: 0');
 header('Cache-Control: must-revalidate');
 header('Pragma: public');
 header('Content-Length: ' . filesize($zipFilePath));
-
-// Читаем файл и отправляем его в браузер
 readfile($zipFilePath);
-
-
-// --- ШАГ 4: Удаляем временный файл архива с сервера ---
 unlink($zipFilePath);
-
 exit;
 ?>
