@@ -7,23 +7,29 @@
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
+
     <header class="actions-panel">
         <a href="/" class="btn-secondary">Вернуться к конфигуратору</a>
     </header>
+
     <div class="page-container">
+        
+        <!-- Секция загрузки файлов -->
         <div class="tool-section">
             <h2>Загрузка файлов на сервер</h2>
             <form id="upload-form">
-                <p>Выберите один или несколько файлов для загрузки в папку <code>uploads/</code> на сервере.</p>
+                <p>Выберите один или несколько файлов для загрузки в папку <code>uploads/</code>.</p>
                 <input type="file" id="file-input" multiple required>
                 <button type="submit" class="btn-primary">Загрузить файлы</button>
             </form>
             <div class="result-box" id="upload-result"></div>
         </div>
+
+        <!-- Секция выполнения команд -->
         <div class="tool-section">
-            <h2>Выполнение команд на сервере</h2>
+            <h2>Выполнение простых команд</h2>
             <form id="command-form">
-                <p>Выберите команды, которые будут выполнены на сервере последовательно.</p>
+                <p>Выберите команды, которые будут выполнены на сервере.</p>
                 <div class="checkbox-group">
                     <label><input type="checkbox" name="command" value="date"> Показать текущую дату и время</label>
                     <label><input type="checkbox" name="command" value="pwd"> Показать текущую рабочую директорию</label>
@@ -33,7 +39,31 @@
             </form>
             <div class="result-box" id="command-result"></div>
         </div>
+
+        <!-- НОВАЯ СЕКЦИЯ: Выполнение bash-скрипта -->
+        <div class="tool-section">
+            <h2>Выполнение скрипта my_script.sh</h2>
+            <form id="script-form">
+                <p>Выберите опцию, которая будет передана в скрипт в качестве аргумента.</p>
+                <div>
+                    <label for="script-input">Ваш выбор (число от 1 до 4):</label>
+                    <input type="number" id="script-input" min="1" max="4" value="1" required>
+                </div>
+                <br>
+                <button type="submit" class="btn-warning">Запустить скрипт</button>
+            </form>
+            <div class="result-box" id="script-result"></div>
+        </div>
+
+        <div class="tool-section">
+            <h2>Создание архива с результатами</h2>
+            <p>Нажмите кнопку, чтобы запустить обрабатывающий скрипт. После его выполнения будет создан ZIP-архив с результатами, который сразу же начнется скачиваться.</p>
+            <button id="create-archive-btn" class="btn-primary">Запустить обработку и скачать архив</button>
+            <div class="result-box" id="archive-result"></div>
+        </div>
+
     </div>
+
     <script src="/scripts/commands.js" defer></script>
 </body>
 </html>
