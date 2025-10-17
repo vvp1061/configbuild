@@ -29,7 +29,7 @@
             <table class="register-table">
                 <thead><tr><th>Имя</th><th>Размер (бит)</th><th>Адрес</th><th>Описание</th><th>Тип</th><th>Значение по умолч.</th><th>Действие</th></tr></thead>
                 <tbody id="register-table-body"></tbody>
-                <tfoot><tr><td colspan="7"><button class="btn btn-success btn-add" id="add-reg-btn">➕ Добавить регистр</button></td></tr></tfoot>
+                <tfoot><tr><td colspan="7"></td></tr></tfoot>
             </table>
         </main>
     </div>
@@ -40,6 +40,14 @@
             <textarea id="json-output" readonly style="width: 100%; min-height: 200px; border: none; font-family: monospace;"></textarea>
         </div>
     </div>
+
+    <footer class="footer-panel" id="add-reg-footer">
+        <div class="tool-section">
+            <div class="task-controls">
+                <button class="btn btn-success" id="add-reg-btn">➕ Добавить регистр</button>
+            </div>
+        </div>
+    </footer>
 
     <script src="/scripts/script.js" defer></script>
 </body>

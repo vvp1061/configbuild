@@ -62,9 +62,9 @@ function populateSegmentNav() {
 function displaySegment(segmentIndex) {
     document.querySelectorAll('#segment-list a').forEach(el => el.classList.remove('active'));
     document.querySelector(`#segment-list a[data-index='${segmentIndex}']`).classList.add('active');
-
+    
     const segment = currentData.segments[segmentIndex];
-
+    
     segmentEditor.innerHTML = `
         <h2>Редактирование сегмента: ${segment.name}</h2>
         <div class="form-grid">
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInput.addEventListener('change', handleFileSelect);
     loadFromServerBtn.addEventListener('click', fetchConfigFromServer);
     saveToServerBtn.addEventListener('click', uploadConfigToServer);
-
+    
     downloadBtn.addEventListener('click', () => {
         saveChangesFromUI();
         const finalJson = JSON.stringify(currentData, null, 4);
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadData(deepCopy(initialJsonData));
         }
     });
-
+    
     addRegBtn.addEventListener('click', () => {
         saveChangesFromUI();
         const newReg = {
@@ -229,31 +229,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // ВАЖНО: Обработчик устанавливается на таблицу (делегирование событий)
     // ================================================================
     const registerTable = document.querySelector('.register-table');
-
+    
     if (registerTable) {
         console.log('✅ Таблица найдена, устанавливаем обработчик удаления');
-
+        
         registerTable.addEventListener('click', (event) => {
             const deleteButton = event.target.closest('.btn-delete-reg');
 
             if (deleteButton) {
                 console.log('🗑️ Клик по кнопке удаления обнаружен');
-
+                
                 // КРИТИЧНО: НЕ вызываем saveChangesFromUI() здесь!
                 // Иначе индексы в data-атрибутах собьются с реальными индексами массива
-
+                
                 const regIndex = parseInt(deleteButton.dataset.regIndex, 10);
                 console.log('Индекс для удаления:', regIndex);
-
+                
                 // Проверка валидности индекса
                 if (isNaN(regIndex) || !currentData.segments[activeSegmentIndex].regs[regIndex]) {
                     console.error('Невалидный индекс регистра:', regIndex);
                     alert('Ошибка: невалидный индекс регистра!');
                     return;
                 }
-
+                
                 const regName = currentData.segments[activeSegmentIndex].regs[regIndex].name;
-
+                
                 if (confirm(`Вы уверены, что хотите удалить регистр "${regName}"?`)) {
                     // Удаляем регистр из массива
                     currentData.segments[activeSegmentIndex].regs.splice(regIndex, 1);

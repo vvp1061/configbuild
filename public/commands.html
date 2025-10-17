@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ру">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,70 +7,68 @@
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
-
     <header class="header">
         <a href="/" class="btn btn-secondary">← Вернуться к конфигуратору</a>
     </header>
 
     <div class="page-container">
-        
         <div class="tool-section">
             <h2>Загрузка файлов на сервер</h2>
             <form id="upload-form">
                 <p>Выберите один или несколько файлов для загрузки в папку <code>uploads/</code>.</p>
-                <input type="file" id="file-input" multiple required style="margin-bottom: 1rem;">
+                <input type="file" id="upload-file-input" multiple required style="margin-bottom: 1rem;">
                 <button type="submit" class="btn btn-primary">Загрузить файлы</button>
             </form>
             <div class="result-box" id="upload-result"></div>
         </div>
 
         <div class="tool-section">
-            <h2>Выполнение простых команд</h2>
-            <form id="command-form">
-                <p>Выберите команды, которые будут выполнены на сервере.</p>
-                <div class="checkbox-group" style="margin: 1rem 0;">
-                    <label><input type="checkbox" name="command" value="date"> Показать текущую дату и время</label>
-                    <label><input type="checkbox" name="command" value="pwd"> Показать текущую рабочую директорию</label>
-                    <label><input type="checkbox" name="command" value="ls"> Показать содержимое директории</label>
+            <h2>Сборка (долгая задача)</h2>
+            <form id="build-form">
+                <p>Выберите модули для сборки. Будет выполнено последовательно:</p>
+                <div class="checkbox-group" style="margin: 1rem 0; display: grid; gap: 0.5rem;">
+                    <label><input type="checkbox" name="build_part" value="kernel"> kernel</label>
+                    <label><input type="checkbox" name="build_part" value="fs"> fs</label>
+                    <label><input type="checkbox" name="build_part" value="net"> net</label>
                 </div>
-                <button type="submit" class="btn btn-success">Выполнить</button>
+                <button type="submit" class="btn btn-primary">Запустить сборку</button>
             </form>
-            <div class="result-box" id="command-result"></div>
+            <div class="result-box" id="build-result" style="display:none; margin-top: 1rem;">
+                <h3>Вывод сборки: <span id="build-status"></span></h3>
+                <pre id="build-output"></pre>
+            </div>
         </div>
 
         <div class="tool-section">
-            <h2>Выполнение скрипта my_script.sh</h2>
-            <form id="script-form">
-                <p>Выберите опцию, которая будет передана в скрипт.</p>
-                <div style="margin: 1rem 0;">
-                    <label for="script-input">Ваш выбор (число от 1 до 4):</label>
-                    <input type="number" id="script-input" min="1" max="4" value="1" required>
+            <h2>Запуск скрипта с параметром (1-4)</h2>
+            <form id="number-task-form">
+                <p>Выберите значение (1-4), задача выполнится в долгую:</p>
+                <div style="margin: 1rem 0; display: grid; gap: 0.5rem;">
+                    <label><input type="radio" name="number-choice" value="1" checked> 1</label>
+                    <label><input type="radio" name="number-choice" value="2"> 2</label>
+                    <label><input type="radio" name="number-choice" value="3"> 3</label>
+                    <label><input type="radio" name="number-choice" value="4"> 4</label>
                 </div>
-                <button type="submit" class="btn btn-warning">Запустить скрипт</button>
+                <button type="submit" class="btn btn-warning">Запустить задачу</button>
             </form>
-            <div class="result-box" id="script-result"></div>
+            <div class="result-box" id="number-task-result" style="display:none; margin-top: 1rem;">
+                <h3>Вывод: <span id="number-task-status"></span></h3>
+                <pre id="number-task-output"></pre>
+            </div>
         </div>
-
     </div>
 
-    <!-- НИЖНЯЯ ПАНЕЛЬ ДЛЯ ДОЛГОЙ ЗАДАЧИ -->
     <footer class="footer-panel">
         <div class="tool-section">
-            <h2>Запуск долгой задачи (Сборка)</h2>
-            <p>Нажмите, чтобы запустить процесс сборки. Вывод будет отображаться ниже в реальном времени.</p>
-            
-            <!-- Кнопки управления задачей -->
+            <h2>Долгая задача: подготовка архива</h2>
+            <p>Нажмите, чтобы запустить процесс. После завершения станет доступна ссылка на скачивание.</p>
             <div class="task-controls">
-                <button id="start-task-btn" class="btn btn-primary">Запустить сборку</button>
-                <a href="/api/download_archive.php" id="download-archive-btn" class="btn btn-success" style="display: none;">
-                    Скачать готовый архив
-                </a>
+                <button id="start-processing-btn" class="btn btn-primary">Запустить подготовку</button>
+                <a href="/api/download_archive.php" id="download-archive-btn" class="btn btn-success" style="display:  none;">Скачать готовый архив</a>
             </div>
-            
-            <!-- Окно вывода лога -->
-            <div class="result-box" id="task-result" style="display:none; margin-top: 1rem;">
-                <h3>Вывод сборки: <span id="task-status"></span></h3>
-                <pre id="task-output"></pre>
+            <div class="result-box" id="processing-result" style="display:none; margin-top: 1rem;">
+                <h3>Статус: <span id="processing-status"></span></h3>
+                <pre id="processing-output"></pre>
             </div>
         </div>
     </footer>

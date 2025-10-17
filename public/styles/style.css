@@ -40,7 +40,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
 }
 
 /* =================================================================== */
@@ -58,11 +58,18 @@ body {
     flex-wrap: wrap; /* Перенос кнопок на новую строку на маленьких экранах */
 }
 
+/* Единый размер кнопок только в шапке */
+.header .btn {
+    min-width: 220px; /* одинаковая ширина для всех кнопок в header */
+}
+
 .main-container {
     display: flex;
     flex-grow: 1;
     overflow: hidden;
 }
+
+/* Удалено: верхняя панель действий */
 
 .page-container {
     padding: 1.5rem;
@@ -77,11 +84,14 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem 1rem; /* Единый размер для всех */
+    padding: 0.6rem 1.1rem; /* Чуть больше кликабельная область */
     border: 1px solid transparent;
     border-radius: var(--border-radius);
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 1rem; /* Крупнее для лучшей читаемости */
+    line-height: 1.25;
+    font-weight: 600; /* Чуть жирнее текст */
+    letter-spacing: 0.2px; /* Небольшой кернинг улучшает читаемость */
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2); /* Небольшая тень для читаемости */
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
@@ -94,20 +104,23 @@ body {
 }
 
 /* Цветовые схемы */
-.btn-primary { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
-.btn-primary:hover { background-color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+.btn-primary { background-color: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+.btn-primary:hover { background-color: var(--color-primary-hover); border-color: var(--color-primary-hover); color: #fff; }
 
-.btn-secondary { background-color: var(--color-secondary); color: white; border-color: var(--color-secondary); }
-.btn-secondary:hover { background-color: var(--color-secondary-hover); border-color: var(--color-secondary-hover); }
+.btn-secondary { background-color: var(--color-secondary); color: #fff; border-color: var(--color-secondary); }
+.btn-secondary:hover { background-color: var(--color-secondary-hover); border-color: var(--color-secondary-hover); color: #fff; }
 
-.btn-success { background-color: var(--color-success); color: white; border-color: var(--color-success); }
-.btn-success:hover { background-color: var(--color-success-hover); border-color: var(--color-success-hover); }
+.btn-success { background-color: var(--color-success); color: #fff; border-color: var(--color-success); }
+.btn-success:hover { background-color: var(--color-success-hover); border-color: var(--color-success-hover); color: #fff; }
 
-.btn-warning { background-color: var(--color-warning); color: var(--color-text); border-color: var(--color-warning); }
-.btn-warning:hover { background-color: var(--color-warning-hover); border-color: var(--color-warning-hover); }
+.btn-warning { background-color: var(--color-warning); color: #111; border-color: var(--color-warning); }
+.btn-warning:hover { background-color: var(--color-warning-hover); border-color: var(--color-warning-hover); color: #111; }
 
-.btn-danger { background-color: var(--color-danger); color: white; border-color: var(--color-danger); }
-.btn-danger:hover { background-color: var(--color-danger-hover); border-color: var(--color-danger-hover); }
+.btn-danger { background-color: var(--color-danger); color: #fff; border-color: var(--color-danger); }
+.btn-danger:hover { background-color: var(--color-danger-hover); border-color: var(--color-danger-hover); color: #fff; }
+
+/* Для жёлтых кнопок тень мешает читаемости текста */
+.btn-warning { text-shadow: none; }
 
 .btn-delete-reg { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
 .btn-add { width: 100%; }
@@ -185,6 +198,13 @@ input:focus-visible, select:focus-visible {
     border-top: 1px solid var(--color-border);
     box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
     flex-shrink: 0; /* Панель не будет сжиматься */
+    /* Делаем панель «липкой» у низа, чтобы она не перекрывала контент и
+       расширялась вместе с макетом, сохраняя прокрутку страницы */
+    position: sticky;
+    bottom: 0;
+    z-index: 1000;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 0;
 }
 
 .footer-panel .tool-section {
@@ -197,5 +217,16 @@ input:focus-visible, select:focus-visible {
 .task-controls {
     display: flex;
     align-items: center;
+    justify-content: center; /* Центрируем содержимое в футере */
     gap: 0.75rem; /* Расстояние между кнопками */
+}
+
+/* Индивидуальные настройка футера на index.html */
+#add-reg-footer {
+    outline-color: var(--color-success);
+}
+
+#add-reg-footer #add-reg-btn {
+    padding: 0.9rem 1.5rem; /* больше кнопка */
+    font-size: 1.1rem;
 }

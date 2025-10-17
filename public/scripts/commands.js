@@ -1,158 +1,167 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ===================================================================
-    // Секция долгой задачи (переписана с нуля)
-    // ===================================================================
-    const startTaskBtn = document.getElementById('start-task-btn');
-    const downloadArchiveBtn = document.getElementById('download-archive-btn');
-    const taskResultBox = document.getElementById('task-result');
-    const taskStatusSpan = document.getElementById('task-status');
-    const taskOutputPre = document.getElementById('task-output');
-
-    // Глобальная переменная для ID интервала. Это критически важно.
-    let taskCheckIntervalId = null;
-
-    // Функция остановки опроса. Мы будем вызывать ее отовсюду.
-    function stopPolling() {
-        if (taskCheckIntervalId) {
-            clearInterval(taskCheckIntervalId);
-            taskCheckIntervalId = null;
-            console.log('Polling stopped.');
-        }
-        startTaskBtn.disabled = false;
-    }
-
-    // Функция проверки статуса
-    async function checkTaskStatus(taskId) {
-        try {
-            const response = await fetch(`/api/check_task_status.php?id=${taskId}`);
-            if (!response.ok) {
-                throw new Error(`Server responded with status: ${response.status}`);
-            }
-            const result = await response.json();
-
-            taskOutputPre.textContent = result.log_output || 'Ожидание вывода...';
-
-            const status = (result.status || '').trim();
-            taskStatusSpan.textContent = `(${status})`;
-
-            // Явная и простая проверка на завершение
-            if (status === 'finished') {
-                taskStatusSpan.textContent = `(SUCCESS)`;
-                downloadArchiveBtn.style.display = 'inline-flex';
-                stopPolling();
-            } else if (status === 'error') {
-                taskStatusSpan.textContent = `(ERROR)`;
-                downloadArchiveBtn.style.display = 'none';
-                stopPolling();
-            }
-        } catch (error) {
-            taskOutputPre.textContent += `\n\n[FATAL] Ошибка при проверке статуса: ${error.message}`;
-            stopPolling();
-        }
-    }
-
-    // Обработчик нажатия на кнопку "Запустить сборку"
-    if (startTaskBtn) {
-        startTaskBtn.addEventListener('click', async () => {
-            // Всегда останавливаем предыдущий опрос перед новым запуском
-            stopPolling();
-
-            // Подготовка интерфейса
-            startTaskBtn.disabled = true;
-            downloadArchiveBtn.style.display = 'none';
-            taskResultBox.style.display = 'block';
-            taskStatusSpan.textContent = '(starting...)';
-            taskOutputPre.textContent = 'Отправка запроса на запуск...';
-
-            try {
-                const response = await fetch('/api/start_task.php', { method: 'POST' });
-                if (!response.ok) {
-                     throw new Error(`Server responded with status: ${response.status}`);
-                }
-                const result = await response.json();
-
-                if (result.status === 'started' && result.task_id) {
-                    const taskId = result.task_id;
-                    console.log(`Polling started for task ID: ${taskId}`);
-                    // Запускаем опрос
-                    taskCheckIntervalId = setInterval(() => checkTaskStatus(taskId), 3000);
-                } else {
-                    throw new Error(result.message || 'Сервер не смог запустить задачу.');
-                }
-            } catch (error) {
-                taskOutputPre.textContent = `[FATAL] Критическая ошибка при запуске задачи: ${error.message}`;
-                startTaskBtn.disabled = false;
-            }
-        });
-    }
-
-
-    // ===================================================================
-    // Остальные секции (без изменений, просто для полноты файла)
-    // ===================================================================
+    // --- Загрузка файлов ---
     const uploadForm = document.getElementById('upload-form');
+    const uploadFileInput = document.getElementById('upload-file-input');
+    const uploadResult = document.getElementById('upload-result');
+
     if (uploadForm) {
-        const fileInput = document.getElementById('file-input');
-        const uploadResult = document.getElementById('upload-result');
         uploadForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            if (fileInput.files.length === 0) {
-                uploadResult.innerHTML = `<p class="error">Пожалуйста, выберите файлы.</p>`;
+            if (!uploadFileInput.files || uploadFileInput.files.length === 0) {
+                uploadResult.innerHTML = '<p class="error">Пожалуйста, выберите файлы.</p>';
                 return;
             }
             const formData = new FormData();
-            for (const file of fileInput.files) { formData.append('filesToUpload[]', file); }
-            uploadResult.innerHTML = `<p>Загрузка...</p>`;
+            for (const file of uploadFileInput.files) formData.append('filesToUpload[]', file);
+            uploadResult.innerHTML = '<p>Загрузка...</p>';
             try {
                 const response = await fetch('/api/upload_files.php', { method: 'POST', body: formData });
                 const result = await response.json();
-                if (!response.ok) throw new Error(result.message);
+                if (!response.ok) throw new Error(result.message || 'Ошибка на сервере');
                 uploadResult.innerHTML = `<p class="success">${result.message}</p>`;
-                fileInput.value = '';
+                uploadFileInput.value = '';
             } catch (error) {
                 uploadResult.innerHTML = `<p class="error">Ошибка: ${error.message}</p>`;
             }
         });
     }
 
-    const commandForm = document.getElementById('command-form');
-    if (commandForm) {
-        const commandResult = document.getElementById('command-result');
-        commandForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const checkedBoxes = document.querySelectorAll('input[name="command"]:checked');
-            const commands = Array.from(checkedBoxes).map(cb => cb.value);
-            if (commands.length === 0) {
-                commandResult.innerHTML = `<p class="error">Выберите хотя бы одну команду.</p>`;
-                return;
+    // --- Сборка ---
+    const buildForm = document.getElementById('build-form');
+    const buildResultBox = document.getElementById('build-result');
+    const buildStatusSpan = document.getElementById('build-status');
+    const buildOutputPre = document.getElementById('build-output');
+
+    // --- Числовая задача ---
+    const numberTaskForm = document.getElementById('number-task-form');
+    const numberTaskResultBox = document.getElementById('number-task-result');
+    const numberTaskStatusSpan = document.getElementById('number-task-status');
+    const numberTaskOutputPre = document.getElementById('number-task-output');
+
+    // --- Подготовка архива (футер) ---
+    const startProcessingBtn = document.getElementById('start-processing-btn');
+    const downloadArchiveBtn = document.getElementById('download-archive-btn');
+    const processingResultBox = document.getElementById('processing-result');
+    const processingStatusSpan = document.getElementById('processing-status');
+    const processingOutputPre = document.getElementById('processing-output');
+
+    let taskCheckIntervalId = null;
+
+    function stopPolling() {
+        if (taskCheckIntervalId) {
+            clearInterval(taskCheckIntervalId);
+            taskCheckIntervalId = null;
+        }
+    }
+
+    async function checkTaskStatus(taskId, sinks) {
+        try {
+            const response = await fetch(`/api/check_task_status.php?id=${encodeURIComponent(taskId)}`);
+            if (!response.ok) throw new Error(`Server responded with status: ${response.status}`);
+            const result = await response.json();
+            const status = (result.status || '').trim();
+            const output = result.log_output || '';
+
+            sinks.forEach(s => { if (s.output) s.output.textContent = output; });
+
+            if (status === 'finished') {
+                sinks.forEach(s => { if (s.status) s.status.textContent = 'SUCCESS'; });
+                if (sinks.some(s => s.onFinished)) { sinks.forEach(s => { if (s.onFinished) s.onFinished(); }); }
+                stopPolling();
+            } else if (status === 'running') {
+                sinks.forEach(s => { if (s.status) s.status.textContent = 'running...'; });
+            } else {
+                sinks.forEach(s => { if (s.status) s.status.textContent = status || 'unknown'; });
             }
-            commandResult.innerHTML = `<p>Выполнение...</p>`;
+        } catch (error) {
+            const err = `[FATAL] Ошибка при проверке статуса: ${error.message}`;
+            sinks.forEach(s => { if (s.output) s.output.textContent += `\n\n${err}`; });
+            stopPolling();
+        }
+    }
+
+    async function startTask(scriptKey, args, sinks) {
+        const response = await fetch('/api/start_task.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ script_key: scriptKey, args: args || [] }),
+        });
+        if (!response.ok) {
+            const txt = await response.text();
+            throw new Error(`HTTP ${response.status}: ${txt}`);
+        }
+        const result = await response.json();
+        if (result.status !== 'started' || !result.task_id) {
+            throw new Error(result.message || 'Сервер не смог запустить задачу.');
+        }
+        const taskId = result.task_id;
+        taskCheckIntervalId = setInterval(() => checkTaskStatus(taskId, sinks), 3000);
+    }
+
+    // --- Обработчик сборки ---
+    if (buildForm) {
+        buildForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const checked = Array.from(buildForm.querySelectorAll('input[name="build_part"]:checked')).map(cb => cb.value);
+            if (checked.length === 0) { alert('Выберите хотя бы один модуль: kernel, fs, net'); return; }
+
+            stopPolling();
+            buildResultBox.style.display = 'block';
+            buildStatusSpan.textContent = '(starting...)';
+            buildOutputPre.textContent = 'Отправка запроса на запуск сборки...';
+
             try {
-                const response = await fetch('/api/execute_command.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ commands: commands }) });
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.message);
-                commandResult.innerHTML = `<p class="success">${result.message}</p><pre>${result.output}</pre>`;
+                await startTask('build', checked, [{ status: buildStatusSpan, output: buildOutputPre }]);
             } catch (error) {
-                commandResult.innerHTML = `<p class="error">Ошибка: ${error.message}</p>`;
+                buildOutputPre.textContent = `[FATAL] Критическая ошибка при запуске сборки: ${error.message}`;
             }
         });
     }
 
-    const scriptForm = document.getElementById('script-form');
-    if (scriptForm) {
-        const scriptInput = document.getElementById('script-input');
-        const scriptResult = document.getElementById('script-result');
-        scriptForm.addEventListener('submit', async (event) => {
+    // --- Обработчик числовой задачи (my_script) ---
+    if (numberTaskForm) {
+        numberTaskForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            const choice = scriptInput.value;
-            scriptResult.innerHTML = `<p>Запуск скрипта с выбором "${choice}"...</p>`;
+            const selected = document.querySelector('input[name="number-choice"]:checked');
+            const value = selected ? selected.value : '';
+            if (!value) { alert('Выберите значение от 1 до 4'); return; }
+
+            stopPolling();
+            numberTaskResultBox.style.display = 'block';
+            numberTaskStatusSpan.textContent = '(starting...)';
+            numberTaskOutputPre.textContent = 'Отправка запроса на запуск...';
+
             try {
-                const response = await fetch('/api/execute_command.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: 'run_script', choice: choice }) });
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Ошибка на сервере');
-                scriptResult.innerHTML = `<p class="success">Скрипт выполнен!</p><pre>${result.output}</pre>`;
+                await startTask('my_script', [value], [{ status: numberTaskStatusSpan, output: numberTaskOutputPre }]);
             } catch (error) {
-                scriptResult.innerHTML = `<p class="error">Ошибка: ${error.message}</p>`;
+                numberTaskOutputPre.textContent = `[FATAL] Критическая ошибка при запуске: ${error.message}`;
+            }
+        });
+    }
+
+    // --- Обработчик долгой задачи в футере (processing_script) ---
+    if (startProcessingBtn) {
+        startProcessingBtn.addEventListener('click', async () => {
+            stopPolling();
+            startProcessingBtn.disabled = true;
+            downloadArchiveBtn.style.display = 'none';
+            processingResultBox.style.display = 'block';
+            processingStatusSpan.textContent = '(starting...)';
+            processingOutputPre.textContent = 'Отправка запроса на запуск...';
+
+            try {
+                await startTask('processing_script', [], [{
+                    status: processingStatusSpan,
+                    output: processingOutputPre,
+                    onFinished: () => {
+                        processingStatusSpan.textContent = 'SUCCESS';
+                        downloadArchiveBtn.style.display = 'inline-flex';
+                        startProcessingBtn.disabled = false;
+                    }
+                }]);
+            } catch (error) {
+                processingOutputPre.textContent = `[FATAL] Критическая ошибка при запуске: ${error.message}`;
+                startProcessingBtn.disabled = false;
             }
         });
     }

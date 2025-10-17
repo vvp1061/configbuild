@@ -1,39 +1,29 @@
 <?php
-
-// --- Центральный файл конфигурации ---
-
-// Определяем корневую директорию проекта.
-// Это делает все остальные пути надежными.
 define('PROJECT_ROOT', dirname(__DIR__));
 
 return [
-    // --- 1. Пути к файлам и директориям ---
     'paths' => [
         'config_file' => PROJECT_ROOT . '/data/config_reg.json',
         'backup_dir' => PROJECT_ROOT . '/data/backups/',
         'upload_dir' => PROJECT_ROOT . '/uploads/',
-        'processed_files_dir' => PROJECT_ROOT . '/processed_files/', // Папка с файлами для архива
-        'log_dir' => PROJECT_ROOT . '/logs/',                   // Папка для логов фоновых задач
+        'log_dir' => PROJECT_ROOT . '/logs/',
+        'processed_files_dir' => PROJECT_ROOT . '/processed_files/',
     ],
 
-    // --- 2. Команды и скрипты для выполнения ---
-    // Здесь мы можем менять команды, добавлять ключи и т.д.
-    'commands' => [
-        'date' => 'date',
-        'pwd'  => 'pwd',
-        'ls'   => 'ls -lah ' . escapeshellarg(PROJECT_ROOT . '/public'),
-    ],
-
+    // Все скрипты запускаются как долгие задачи через /api/start_task.php
     'scripts' => [
+        'build' => [
+            'path' => PROJECT_ROOT . '/build.sh',
+            'description' => 'Долгая сборка с ключами kernel, fs, net.',
+        ],
         'my_script' => [
             'path' => PROJECT_ROOT . '/my_script.sh',
-            'description' => 'Основной скрипт обработки с параметром (1-4).',
+            'description' => 'Скрипт с числовым параметром (1-4).',
         ],
         'processing_script' => [
             'path' => PROJECT_ROOT . '/processing_script.sh',
-            'description' => 'Скрипт, подготавливающий файлы для архивации.',
+            'description' => 'Долгая задача подготовки архива.',
         ],
     ],
 ];
-
 ?>
