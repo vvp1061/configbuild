@@ -7,19 +7,18 @@
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
-    <!-- ИЗМЕНЕНИЕ: класс header -->
+
     <header class="header">
-        <!-- ИЗМЕНЕНИЕ: Добавлены классы .btn и .btn-secondary к ссылке -->
         <a href="/" class="btn btn-secondary">← Вернуться к конфигуратору</a>
     </header>
 
     <div class="page-container">
+        
         <div class="tool-section">
             <h2>Загрузка файлов на сервер</h2>
             <form id="upload-form">
                 <p>Выберите один или несколько файлов для загрузки в папку <code>uploads/</code>.</p>
                 <input type="file" id="file-input" multiple required style="margin-bottom: 1rem;">
-                <!-- ИЗМЕНЕНИЕ: Добавлены классы .btn и .btn-primary -->
                 <button type="submit" class="btn btn-primary">Загрузить файлы</button>
             </form>
             <div class="result-box" id="upload-result"></div>
@@ -34,7 +33,6 @@
                     <label><input type="checkbox" name="command" value="pwd"> Показать текущую рабочую директорию</label>
                     <label><input type="checkbox" name="command" value="ls"> Показать содержимое директории</label>
                 </div>
-                <!-- ИЗМЕНЕНИЕ: Добавлены классы .btn и .btn-success -->
                 <button type="submit" class="btn btn-success">Выполнить</button>
             </form>
             <div class="result-box" id="command-result"></div>
@@ -48,20 +46,34 @@
                     <label for="script-input">Ваш выбор (число от 1 до 4):</label>
                     <input type="number" id="script-input" min="1" max="4" value="1" required>
                 </div>
-                <!-- ИЗМЕНЕНИЕ: Добавлены классы .btn и .btn-warning -->
                 <button type="submit" class="btn btn-warning">Запустить скрипт</button>
             </form>
             <div class="result-box" id="script-result"></div>
         </div>
 
-        <div class="tool-section">
-            <h2>Создание архива с результатами</h2>
-            <p>Нажмите, чтобы запустить обработку, создать ZIP-архив и скачать его.</p>
-            <!-- ИЗМЕНЕНИЕ: Добавлены классы .btn и .btn-primary -->
-            <button id="create-archive-btn" class="btn btn-primary">Запустить и скачать</button>
-            <div class="result-box" id="archive-result"></div>
-        </div>
     </div>
+
+    <!-- НИЖНЯЯ ПАНЕЛЬ ДЛЯ ДОЛГОЙ ЗАДАЧИ -->
+    <footer class="footer-panel">
+        <div class="tool-section">
+            <h2>Запуск долгой задачи (Сборка)</h2>
+            <p>Нажмите, чтобы запустить процесс сборки. Вывод будет отображаться ниже в реальном времени.</p>
+            
+            <!-- Кнопки управления задачей -->
+            <div class="task-controls">
+                <button id="start-task-btn" class="btn btn-primary">Запустить сборку</button>
+                <a href="/api/download_archive.php" id="download-archive-btn" class="btn btn-success" style="display: none;">
+                    Скачать готовый архив
+                </a>
+            </div>
+            
+            <!-- Окно вывода лога -->
+            <div class="result-box" id="task-result" style="display:none; margin-top: 1rem;">
+                <h3>Вывод сборки: <span id="task-status"></span></h3>
+                <pre id="task-output"></pre>
+            </div>
+        </div>
+    </footer>
 
     <script src="/scripts/commands.js" defer></script>
 </body>

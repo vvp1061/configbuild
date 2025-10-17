@@ -175,3 +175,27 @@ input:focus-visible, select:focus-visible {
 .result-box .error { color: var(--color-danger); font-weight: 500; }
 
 #file-input { display: none; }
+
+/* =================================================================== */
+/* 6. Стили для нижней панели
+/* =================================================================== */
+.footer-panel {
+    background-color: var(--color-surface);
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    flex-shrink: 0; /* Панель не будет сжиматься */
+}
+
+.footer-panel .tool-section {
+    margin-bottom: 0; /* Убираем лишний отступ у карточки внутри панели */
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.task-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Расстояние между кнопками */
+}

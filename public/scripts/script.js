@@ -1,6 +1,5 @@
-// Версия для PHP back-end
+// Финальная, исправленная версия для PHP back-end
 
-// Исходные данные JSON (как стартовый шаблон для сброса)
 const initialJsonData = {
     "segments": [{
         "name": "DEFAULT_SEGMENT", "base_addr": "0x0", "description": "Новый сегмент по умолчанию", "segment_size": "0x1000",
@@ -14,18 +13,14 @@ let activeSegmentIndex = 0;
 // --- DOM Элементы ---
 const segmentList = document.getElementById('segment-list');
 const segmentEditor = document.getElementById('segment-editor');
-const registerView = document.getElementById('register-view');
 const registerTableBody = document.getElementById('register-table-body');
 const addRegBtn = document.getElementById('add-reg-btn');
-
-// Кнопки
 const loadFromDiskBtn = document.getElementById('load-from-disk-btn');
 const loadFromServerBtn = document.getElementById('load-from-server-btn');
 const saveToServerBtn = document.getElementById('save-to-server-btn');
 const fileInput = document.getElementById('file-input');
 const downloadBtn = document.getElementById('download-btn');
 const resetAllBtn = document.getElementById('reset-all-btn');
-
 const outputContainer = document.getElementById('output-container');
 const jsonOutput = document.getElementById('json-output');
 
@@ -67,9 +62,9 @@ function populateSegmentNav() {
 function displaySegment(segmentIndex) {
     document.querySelectorAll('#segment-list a').forEach(el => el.classList.remove('active'));
     document.querySelector(`#segment-list a[data-index='${segmentIndex}']`).classList.add('active');
-    
+
     const segment = currentData.segments[segmentIndex];
-    
+
     segmentEditor.innerHTML = `
         <h2>Редактирование сегмента: ${segment.name}</h2>
         <div class="form-grid">
@@ -105,68 +100,60 @@ function displaySegment(segmentIndex) {
 
 function saveChangesFromUI() {
     if (!currentData || !currentData.segments[activeSegmentIndex]) return;
-
     const segment = currentData.segments[activeSegmentIndex];
-    
-    segmentEditor.querySelectorAll('input').forEach(input => {
+    segmentEditor.querySelectorAll("input").forEach(input => {
         segment[input.dataset.field] = input.value;
     });
-
     if (segment.regs) {
-        registerTableBody.querySelectorAll('tr').forEach((row) => {
-            const firstInput = row.querySelector('[data-reg-index]');
-            if (!firstInput) return;
-            const regIndex = parseInt(firstInput.dataset.regIndex, 10);
-
-            if (segment.regs[regIndex]) {
-                 row.querySelectorAll('input, select').forEach(input => {
-                    const field = input.dataset.field;
-                    if (field) {
-                        segment.regs[regIndex][field] = input.value;
-                    }
-                });
+        registerTableBody.querySelectorAll("tr").forEach(row => {
+            const firstInput = row.querySelector("[data-reg-index]");
+            if (firstInput) {
+                const regIndex = parseInt(firstInput.dataset.regIndex, 10);
+                if (segment.regs[regIndex]) {
+                    row.querySelectorAll("input, select").forEach(input => {
+                        const field = input.dataset.field;
+                        if (field) {
+                            segment.regs[regIndex][field] = input.value;
+                        }
+                    });
+                }
             }
         });
     }
-    
     populateSegmentNav();
-    console.log('Изменения для сегмента "' + segment.name + '" сохранены в памяти.');
 }
 
 function handleFileSelect(event) {
     const file = event.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
             const json = JSON.parse(e.target.result);
             loadData(json);
         } catch (error) {
-            alert('Ошибка: Не удалось прочитать или обработать JSON файл.\n' + error);
+            alert("Ошибка: Не удалось прочитать или обработать JSON файл.\n" + error);
         }
     };
     reader.readAsText(file);
-    fileInput.value = ''; // Сбрасываем input, чтобы можно было загрузить тот же файл снова
+    fileInput.value = '';
 }
 
 async function fetchConfigFromServer() {
     const originalText = loadFromServerBtn.textContent;
-    loadFromServerBtn.textContent = 'Загрузка...';
+    loadFromServerBtn.textContent = "Загрузка...";
     loadFromServerBtn.disabled = true;
-
     try {
-        // ИЗМЕНЕНИЕ: Указываем путь к PHP-скрипту
-        const response = await fetch('/api/get_config.php');
+        const response = await fetch("/api/get_config.php");
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Ошибка сервера: ${errorData.message}`);
         }
         const jsonData = await response.json();
         loadData(jsonData);
-        alert('Конфигурация с сервера успешно загружена!');
+        alert("Конфигурация с сервера успешно загружена!");
     } catch (error) {
-        console.error('Ошибка при загрузке с сервера:', error);
+        console.error("Ошибка при загрузке с сервера:", error);
         alert(`Не удалось загрузить конфигурацию с сервера.\n\nДетали: ${error.message}`);
         loadData(deepCopy(initialJsonData));
     } finally {
@@ -177,34 +164,26 @@ async function fetchConfigFromServer() {
 
 async function uploadConfigToServer() {
     saveChangesFromUI();
-
-    if (!confirm('Вы уверены, что хотите сохранить текущую конфигурацию на сервере?')) {
-        return;
-    }
-
-    const originalText = saveToServerBtn.textContent;
-    saveToServerBtn.textContent = 'Сохранение...';
-    saveToServerBtn.disabled = true;
-
-    try {
-        // ИЗМЕНЕНИЕ: Указываем путь к PHP-скрипту
-        const response = await fetch('/api/save_config.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(currentData)
-        });
-
-        const result = await response.json();
-        if (!response.ok) {
-            throw new Error(result.message);
+    if (confirm("Вы уверены, что хотите сохранить текущую конфигурацию на сервере?")) {
+        const originalText = saveToServerBtn.textContent;
+        saveToServerBtn.textContent = "Сохранение...";
+        saveToServerBtn.disabled = true;
+        try {
+            const response = await fetch("/api/save_config.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(currentData),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message);
+            alert(result.message);
+        } catch (error) {
+            console.error("Ошибка при сохранении на сервер:", error);
+            alert(`Ошибка при сохранении на сервер.\n\nДетали: ${error.message}`);
+        } finally {
+            saveToServerBtn.textContent = originalText;
+            saveToServerBtn.disabled = false;
         }
-        alert(result.message);
-    } catch (error) {
-        console.error('Ошибка при сохранении на сервер:', error);
-        alert(`Ошибка при сохранении на сервер.\n\nДетали: ${error.message}`);
-    } finally {
-        saveToServerBtn.textContent = originalText;
-        saveToServerBtn.disabled = false;
     }
 }
 
@@ -215,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadFromDiskBtn.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleFileSelect);
-
     loadFromServerBtn.addEventListener('click', fetchConfigFromServer);
     saveToServerBtn.addEventListener('click', uploadConfigToServer);
 
@@ -226,13 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
         outputContainer.style.display = 'block';
         const blob = new Blob([finalJson], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'config_reg.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        const a = document.createElement('a'); a.href = url; a.download = 'config_reg.json';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     });
 
     resetAllBtn.addEventListener('click', () => {
@@ -240,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadData(deepCopy(initialJsonData));
         }
     });
-    
+
     addRegBtn.addEventListener('click', () => {
         saveChangesFromUI();
         const newReg = {
@@ -251,18 +224,48 @@ document.addEventListener('DOMContentLoaded', () => {
         displaySegment(activeSegmentIndex);
     });
 
-    registerView.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target.classList.contains('btn-delete-reg')) {
-            saveChangesFromUI();
-            const regIndex = parseInt(target.dataset.regIndex, 10);
-            const regName = currentData.segments[activeSegmentIndex].regs[regIndex].name;
-            if (confirm(`Вы уверены, что хотите удалить регистр "${regName}"?`)) {
-                currentData.segments[activeSegmentIndex].regs.splice(regIndex, 1);
-                displaySegment(activeSegmentIndex);
+    // ================================================================
+    // ИСПРАВЛЕННЫЙ ОБРАБОТЧИК ДЛЯ КНОПКИ УДАЛЕНИЯ
+    // ВАЖНО: Обработчик устанавливается на таблицу (делегирование событий)
+    // ================================================================
+    const registerTable = document.querySelector('.register-table');
+
+    if (registerTable) {
+        console.log('✅ Таблица найдена, устанавливаем обработчик удаления');
+
+        registerTable.addEventListener('click', (event) => {
+            const deleteButton = event.target.closest('.btn-delete-reg');
+
+            if (deleteButton) {
+                console.log('🗑️ Клик по кнопке удаления обнаружен');
+
+                // КРИТИЧНО: НЕ вызываем saveChangesFromUI() здесь!
+                // Иначе индексы в data-атрибутах собьются с реальными индексами массива
+
+                const regIndex = parseInt(deleteButton.dataset.regIndex, 10);
+                console.log('Индекс для удаления:', regIndex);
+
+                // Проверка валидности индекса
+                if (isNaN(regIndex) || !currentData.segments[activeSegmentIndex].regs[regIndex]) {
+                    console.error('Невалидный индекс регистра:', regIndex);
+                    alert('Ошибка: невалидный индекс регистра!');
+                    return;
+                }
+
+                const regName = currentData.segments[activeSegmentIndex].regs[regIndex].name;
+
+                if (confirm(`Вы уверены, что хотите удалить регистр "${regName}"?`)) {
+                    // Удаляем регистр из массива
+                    currentData.segments[activeSegmentIndex].regs.splice(regIndex, 1);
+                    console.log('✅ Регистр удалён, перерисовываем таблицу');
+                    // Перерисовываем таблицу с обновлёнными индексами
+                    displaySegment(activeSegmentIndex);
+                }
             }
-        }
-    });
+        });
+    } else {
+        console.error('❌ Таблица .register-table не найдена!');
+    }
 
     window.addEventListener('beforeunload', saveChangesFromUI);
 });
