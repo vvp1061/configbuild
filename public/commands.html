@@ -16,8 +16,11 @@
             <h2>Загрузка файлов на сервер</h2>
             <form id="upload-form">
                 <p>Выберите один или несколько файлов для загрузки в папку <code>uploads/</code>.</p>
-                <input type="file" id="upload-file-input" multiple required style="margin-bottom: 1rem;">
-                <button type="submit" class="btn btn-primary">Загрузить файлы</button>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <label for="upload-file-input" class="btn btn-secondary">Выбрать файлы</label>
+                    <button type="submit" class="btn btn-primary">Загрузить файлы</button>
+                </div>
+                <input type="file" id="upload-file-input" multiple required>
             </form>
             <div class="result-box" id="upload-result"></div>
         </div>

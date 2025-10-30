@@ -188,6 +188,7 @@ input:focus-visible, select:focus-visible {
 .result-box .error { color: var(--color-danger); font-weight: 500; }
 
 #file-input { display: none; }
+#upload-file-input { display: none; }
 
 /* =================================================================== */
 /* 6. Стили для нижней панели
@@ -214,16 +215,25 @@ input:focus-visible, select:focus-visible {
     padding: 0;
 }
 
+/* Модификатор: зелёная обводка футера при готовности архива */
+.footer-panel--success {
+    outline-color: var(--color-success);
+}
+
 .task-controls {
     display: flex;
     align-items: center;
-    justify-content: center; /* Центрируем содержимое в футере */
+    justify-content: flex-start; /* По левому краю по умолчанию */
     gap: 0.75rem; /* Расстояние между кнопками */
 }
 
 /* Индивидуальные настройка футера на index.html */
 #add-reg-footer {
     outline-color: var(--color-success);
+}
+
+#add-reg-footer .task-controls {
+    justify-content: center; /* По центру только на главной */
 }
 
 #add-reg-footer #add-reg-btn {

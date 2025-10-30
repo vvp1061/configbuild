@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Подготовка архива (футер) ---
     const startProcessingBtn = document.getElementById('start-processing-btn');
     const downloadArchiveBtn = document.getElementById('download-archive-btn');
+    const footerPanel = document.querySelector('.footer-panel');
     const processingResultBox = document.getElementById('processing-result');
     const processingStatusSpan = document.getElementById('processing-status');
     const processingOutputPre = document.getElementById('processing-output');
@@ -145,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stopPolling();
             startProcessingBtn.disabled = true;
             downloadArchiveBtn.style.display = 'none';
+            if (footerPanel) footerPanel.classList.remove('footer-panel--success');
             processingResultBox.style.display = 'block';
             processingStatusSpan.textContent = '(starting...)';
             processingOutputPre.textContent = 'Отправка запроса на запуск...';
@@ -156,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     onFinished: () => {
                         processingStatusSpan.textContent = 'SUCCESS';
                         downloadArchiveBtn.style.display = 'inline-flex';
+                        if (footerPanel) footerPanel.classList.add('footer-panel--success');
                         startProcessingBtn.disabled = false;
                     }
                 }]);
